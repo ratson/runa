@@ -1,0 +1,9 @@
+*.log
+yarn.lock
+package-lock.json
+
+# Dependency directories
+node_modules
+
+# Desktop Services Store on macOS
+.DS_Store
