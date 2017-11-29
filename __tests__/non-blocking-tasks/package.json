@@ -2,7 +2,8 @@
   "runa": {
     "tasks": [
       ["node", "--version"],
-      "npm --version"
+      "npm --version",
+      0
     ]
   }
 }

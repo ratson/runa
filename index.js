@@ -19,5 +19,5 @@ module.exports = async ({ cwd, quiet = true } = {}) => {
       (a, tail) => execa(a, tail, execaOpts),
       () => null
     )
-  )
+  ).filter(_.isObject)
 }
