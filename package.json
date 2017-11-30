@@ -16,7 +16,7 @@
     "z": "^1.0.3"
   },
   "devDependencies": {
-    "eslint": "^4.12.0",
+    "eslint": "^4.12.1",
     "eslint-config-concise": "^0.16.0",
     "eslint-config-concise-browser": "^0.16.0",
     "eslint-config-concise-esnext": "^0.16.0",

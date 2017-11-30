@@ -9,7 +9,7 @@ module.exports = async ({ cwd, quiet = true } = {}) => {
   const conf = await pkgConf('runa', {
     cwd,
     defaults: {
-      tasks: [],
+      tasks: {},
     },
   })
   const execaOpts = { cwd, stdio: quiet ? undefined : 'inherit' }
