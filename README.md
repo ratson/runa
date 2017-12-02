@@ -24,7 +24,4 @@ Define tasks in `package.json`
 }
 ```
 
-Then run
-```
-runa
-```
+Then run `runa` and `open http://127.0.0.1:8008`.

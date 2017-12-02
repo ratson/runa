@@ -27,7 +27,7 @@ function runServer({ taskManager, port }) {
   server.post('/start/:name', startTask)
   server.post('/stop/:name', stopTask)
 
-  server.listen(port, () => {
+  server.listen(port, '127.0.0.1', () => {
     // eslint-disable-next-line no-console
     console.log(`${server.name} listening at ${server.url}`)
   })
