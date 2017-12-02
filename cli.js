@@ -6,12 +6,12 @@ const split = require('split')
 const debug = require('debug')
 
 const runa = require('.')
+const runServer = require('./server')
 
 async function main() {
-  const { tasks } = await runa()
-  const taskNameLen = _.max(_.map(tasks, 'name').map(_.size))
-
-  return _.map(tasks, (task, name) => {
+  const taskManager = await runa()
+  const taskNameLen = _.max(_.map(taskManager.tasks, 'name').map(_.size))
+  _.map(taskManager.tasks, (task, name) => {
     task
       .start()
       .stdout.pipe(split(null, null, { trailing: false }))
@@ -19,6 +19,8 @@ async function main() {
         debug(name.padEnd(taskNameLen))(line)
       })
   })
+
+  runServer({ taskManager, port: 8008 })
 }
 
 main()

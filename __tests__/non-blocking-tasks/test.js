@@ -24,8 +24,12 @@ it('can run tasks', async () => {
 })
 
 it('can run from cli', async () => {
-  const { stdout } = await execa('node', [require.resolve('../../cli.js')], {
+  const p = execa('node', [require.resolve('../../cli.js')], {
     cwd: __dirname,
   })
+  setTimeout(() => {
+    p.kill()
+  }, 1000)
+  const { stdout } = await p.catch(err => err)
   expect(stdout).toMatch(/v.+/)
 })
