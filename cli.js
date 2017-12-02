@@ -9,6 +9,10 @@ const runa = require('.')
 const runServer = require('./server')
 
 async function main() {
+  debug.enable('*')
+  // eslint-disable-next-line no-console
+  debug.log = console.log.bind(console)
+
   const taskManager = await runa()
   const taskNameLen = _.max(_.map(taskManager.tasks, 'name').map(_.size))
   _.map(taskManager.tasks, (task, name) => {
