@@ -1,6 +1,6 @@
 {
   "name": "runa",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Process manager for developement with a web interface.",
   "bin": "cli.js",
   "scripts": {
