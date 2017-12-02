@@ -8,12 +8,13 @@ const debug = require('debug')
 const runa = require('.')
 
 async function main() {
-  const processes = await runa()
-  const taskNameLen = _.max(Object.keys(processes).map(_.size))
+  const { tasks } = await runa()
+  const taskNameLen = _.max(_.map(tasks, 'name').map(_.size))
 
-  return _.map(processes, (child, name) => {
-    child.stdout
-      .pipe(split(null, null, { trailing: false }))
+  return _.map(tasks, (task, name) => {
+    task
+      .start()
+      .stdout.pipe(split(null, null, { trailing: false }))
       .on('data', line => {
         debug(name.padEnd(taskNameLen))(line)
       })

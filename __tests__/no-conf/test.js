@@ -3,6 +3,6 @@
 const runa = require('../..')
 
 it('can run without error', async () => {
-  const processes = await runa({ cwd: __dirname })
-  expect(processes).toEqual({})
+  const { tasks } = await runa({ cwd: __dirname })
+  expect(tasks).toEqual({})
 })

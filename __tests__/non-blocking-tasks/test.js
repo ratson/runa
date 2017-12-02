@@ -6,16 +6,16 @@ const execa = require('execa')
 const runa = require('../..')
 
 it('can run tasks', async () => {
-  const processes = await runa({ cwd: __dirname })
-  expect(_.size(processes)).toBe(2)
+  const { tasks } = await runa({ cwd: __dirname })
+  expect(_.size(tasks)).toBe(2)
 
-  expect(await processes['node-version']).toEqual(
+  expect(await tasks['node-version'].start()).toEqual(
     expect.objectContaining({
       code: 0,
       stdout: expect.stringMatching(/v\d+\.\d+\.\d+/),
     })
   )
-  expect(await processes['npm-version']).toEqual(
+  expect(await tasks['npm-version'].start()).toEqual(
     expect.objectContaining({
       code: 0,
       stdout: expect.stringMatching(/\d+\.\d+\.\d+/),
