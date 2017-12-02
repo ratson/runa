@@ -39,7 +39,7 @@
     "*.md",
     "index.js",
     "cli.js",
-    "build"
+    "server.js"
   ],
   "keywords": [
     "process manager"
