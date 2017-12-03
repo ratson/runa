@@ -4,6 +4,8 @@ const Path = require('path')
 
 const restify = require('restify')
 
+const pkg = require('./package.json')
+
 const { serveStatic } = restify.plugins
 
 function runServer({ taskManager, port }) {
@@ -26,7 +28,9 @@ function runServer({ taskManager, port }) {
     getStatus(req, res, next)
   }
 
-  const server = restify.createServer()
+  const server = restify.createServer({
+    name: pkg.name,
+  })
   server.get('/status', getStatus)
   server.post('/start/:name', startTask)
   server.post('/stop/:name', stopTask)
