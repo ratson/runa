@@ -1,6 +1,10 @@
 'use strict'
 
+const Path = require('path')
+
 const restify = require('restify')
+
+const { serveStatic } = restify.plugins
 
 function runServer({ taskManager, port }) {
   function getStatus(req, res, next) {
@@ -26,6 +30,13 @@ function runServer({ taskManager, port }) {
   server.get('/status', getStatus)
   server.post('/start/:name', startTask)
   server.post('/stop/:name', stopTask)
+  server.get(
+    /\/.*/,
+    serveStatic({
+      directory: Path.join(__dirname, 'build'),
+      default: 'index.html',
+    })
+  )
 
   server.listen(port, '127.0.0.1', () => {
     // eslint-disable-next-line no-console
