@@ -3,7 +3,7 @@
 const restify = require('restify')
 
 function runServer({ taskManager, port }) {
-  function getTasks(req, res, next) {
+  function getStatus(req, res, next) {
     res.send({
       tasks: taskManager.getTasks(),
     })
@@ -14,16 +14,16 @@ function runServer({ taskManager, port }) {
     try {
       taskManager.startTask(req.params.name)
     } catch (err) {}
-    getTasks(req, res, next)
+    getStatus(req, res, next)
   }
 
   function stopTask(req, res, next) {
     taskManager.stopTask(req.params.name)
-    getTasks(req, res, next)
+    getStatus(req, res, next)
   }
 
   const server = restify.createServer()
-  server.get('/tasks', getTasks)
+  server.get('/status', getStatus)
   server.post('/start/:name', startTask)
   server.post('/stop/:name', stopTask)
 

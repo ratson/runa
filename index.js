@@ -56,10 +56,27 @@ class TaskManager {
   }
 
   getTasks() {
-    return _.mapValues(this.tasks, task => ({
+    return Object.values(this.tasks).map(task => ({
+      name: task.name,
       command: task.command,
       status: task.getStatus(),
     }))
+  }
+
+  async startTask(name) {
+    const task = this.tasks[name]
+    if (!task) {
+      return null
+    }
+    return task.start()
+  }
+
+  stopTask(name) {
+    const task = this.tasks[name]
+    if (!task) {
+      return
+    }
+    task.stop()
   }
 }
 

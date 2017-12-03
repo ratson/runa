@@ -4,10 +4,16 @@
   "description": "Process manager for developement with a web interface.",
   "bin": "cli.js",
   "scripts": {
+    "prepare": "elm-package install",
+    "prepublishOnly": "run-s build",
+    "start": "elm-app start",
+    "build": "elm-app build",
     "lint": "eslint --ext js,md .",
-    "test": "jest",
+    "test": "run-s test:*",
+    "test:elm": "elm-app test",
+    "test:jest": "jest",
     "precommit": "lint-staged",
-    "prepush": "jest"
+    "prepush": "run-s test"
   },
   "dependencies": {
     "debug": "^3.1.0",
@@ -19,6 +25,7 @@
     "z": "^1.0.3"
   },
   "devDependencies": {
+    "create-elm-app": "^1.10.0",
     "eslint": "^4.12.1",
     "eslint-config-concise": "^0.16.0",
     "eslint-config-concise-browser": "^0.16.0",
@@ -39,7 +46,8 @@
     "*.md",
     "index.js",
     "cli.js",
-    "server.js"
+    "server.js",
+    "build"
   ],
   "keywords": [
     "process manager"

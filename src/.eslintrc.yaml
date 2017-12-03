@@ -1,0 +1,3 @@
+extends:
+  - concise-browser
+  - concise-esnext
