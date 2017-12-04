@@ -27,9 +27,11 @@ it('can run from cli', async () => {
   const p = execa('node', [require.resolve('../../cli.js')], {
     cwd: __dirname,
   })
-  setTimeout(() => {
-    p.kill()
-  }, 4000)
+  p.stdout.on('data', data => {
+    if (data.toString().indexOf('npm-version')) {
+      p.kill()
+    }
+  })
   const { stdout } = await p.catch(err => err)
   expect(stdout).toMatch(/v.+/)
 })
