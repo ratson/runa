@@ -2,8 +2,10 @@
 
 const { matches } = require('z')
 const _ = require('lodash')
+const debug = require('debug')
 const execa = require('execa')
 const pkgConf = require('pkg-conf')
+const split = require('split')
 
 class Task {
   constructor({ name, command, spawn }) {
@@ -22,8 +24,14 @@ class Task {
   }
 
   stop() {
-    this.process.kill()
+    const p = this.process
+    if (p === null) {
+      return p
+    }
     this.process = null
+    p.catch(_.noop)
+    p.kill()
+    return p
   }
 
   getStatus() {
@@ -68,7 +76,17 @@ class TaskManager {
     if (!task) {
       return null
     }
-    return task.start()
+    const taskNameLen = _.max(_.map(this.tasks, 'name').map(_.size))
+    try {
+      return task
+        .start()
+        .stdout.pipe(split(null, null, { trailing: false }))
+        .on('data', line => {
+          debug(name.padEnd(taskNameLen))(line)
+        })
+    } catch (err) {
+      return null
+    }
   }
 
   stopTask(name) {
@@ -77,6 +95,14 @@ class TaskManager {
       return
     }
     task.stop()
+  }
+
+  startAllTasks() {
+    return Object.keys(this.tasks).map(name => this.startTask(name))
+  }
+
+  stopAllTasks() {
+    return Object.keys(this.tasks).map(name => this.stopTask(name))
   }
 }
 

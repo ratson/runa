@@ -29,7 +29,7 @@ it('can run from cli', async () => {
   })
   setTimeout(() => {
     p.kill()
-  }, 2000)
+  }, 4000)
   const { stdout } = await p.catch(err => err)
   expect(stdout).toMatch(/v.+/)
 })
