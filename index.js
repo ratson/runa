@@ -78,12 +78,14 @@ class TaskManager {
     }
     const taskNameLen = _.max(_.map(this.tasks, 'name').map(_.size))
     try {
-      return task
-        .start()
-        .stdout.pipe(split(null, null, { trailing: false }))
-        .on('data', line => {
-          debug(name.padEnd(taskNameLen))(line)
-        })
+      const p = task.start()
+      p.stdout.pipe(split(null, null, { trailing: false })).on('data', line => {
+        debug(name.padEnd(taskNameLen))(line)
+      })
+      p.stderr.pipe(split(null, null, { trailing: false })).on('data', line => {
+        debug(name.padEnd(taskNameLen))(line)
+      })
+      return p
     } catch (err) {
       return null
     }

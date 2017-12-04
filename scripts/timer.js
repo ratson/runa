@@ -2,7 +2,8 @@
 
 function main() {
   setInterval(() => {
-    console.log(new Date())
+    process.stdout.write(`${new Date()}\n`)
+    process.stderr.write('Error\n')
   }, 1000)
 }
 

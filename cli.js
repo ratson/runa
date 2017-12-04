@@ -26,6 +26,7 @@ async function main() {
     stdin.setEncoding('hex')
     stdin.on('data', key => {
       if (key === CONTROL_C || key === CONTROL_D) {
+        taskManager.stopAllTasks()
         process.exit(0)
       }
       if (key === CONTROL_R) {
