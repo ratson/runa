@@ -2,12 +2,14 @@
 'use strict'
 
 const debug = require('debug')
+const opn = require('opn')
 
 const runa = require('.')
 const runServer = require('./server')
 
 const CONTROL_C = '03'
 const CONTROL_D = '04'
+const CONTROL_O = '0f'
 const CONTROL_R = '12'
 
 async function main() {
@@ -17,7 +19,8 @@ async function main() {
 
   const taskManager = await runa()
   taskManager.startAllTasks()
-  runServer({ taskManager, port: 8008 })
+  const port = 8008
+  runServer({ taskManager, port })
 
   const { stdin } = process
   if (typeof stdin.setRawMode === 'function') {
@@ -32,6 +35,10 @@ async function main() {
       if (key === CONTROL_R) {
         taskManager.stopAllTasks()
         taskManager.startAllTasks()
+      }
+      if (key === CONTROL_O) {
+        const url = `http://127.0.0.1:${port}`
+        opn(url).catch(() => {})
       }
     })
   }
