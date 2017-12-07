@@ -51,7 +51,15 @@
     "build"
   ],
   "keywords": [
-    "process manager"
+    "process",
+    "manager",
+    "cli",
+    "elm",
+    "supervisor",
+    "supervisord",
+    "task",
+    "runner",
+    "spawn"
   ],
   "lint-staged": {
     "*.js": [
