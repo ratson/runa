@@ -2,8 +2,10 @@
 'use strict'
 
 const debug = require('debug')
+const execa = require('execa')
 const opn = require('opn')
 const yargs = require('yargs')
+const readPkg = require('read-pkg')
 
 const runa = require('.')
 const runServer = require('./server')
@@ -14,12 +16,26 @@ const CONTROL_O = '0f'
 const CONTROL_R = '12'
 
 async function main() {
-  const { argv } = yargs.option('port', {
+  const { argv } = yargs.usage('$0 [command]').option('port', {
     default: 8008,
     type: 'number',
   })
 
   const { port } = argv
+  const [command] = argv._
+
+  if (command) {
+    const { scripts } = await readPkg()
+    if (!scripts || !scripts[command]) {
+      // eslint-disable-next-line no-console
+      console.error(`Command "${command}" not found.`)
+      process.exit(1)
+    }
+    await execa.shell(scripts[command], {
+      stdio: 'inherit',
+    })
+    return
+  }
 
   debug.enable('*')
   // eslint-disable-next-line no-console

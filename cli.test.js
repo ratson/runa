@@ -12,3 +12,12 @@ it('show version', async () => {
   const { stdout } = await execa('./cli.js', ['--version'], { cwd: __dirname })
   expect(stdout).toMatch(/\d+\.\d+\.\d+/)
 })
+
+it('fail for missing script', async () => {
+  const { code, stderr } = await execa('./cli.js', ['missing-script'], {
+    cwd: __dirname,
+    reject: false,
+  })
+  expect(code).toBe(1)
+  expect(stderr).toMatch(/missing-script/)
+})
