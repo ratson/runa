@@ -3,6 +3,7 @@
 
 const debug = require('debug')
 const opn = require('opn')
+const yargs = require('yargs')
 
 const runa = require('.')
 const runServer = require('./server')
@@ -13,13 +14,19 @@ const CONTROL_O = '0f'
 const CONTROL_R = '12'
 
 async function main() {
+  const { argv } = yargs.option('port', {
+    default: 8008,
+    type: 'number',
+  })
+
+  const { port } = argv
+
   debug.enable('*')
   // eslint-disable-next-line no-console
   debug.log = console.log.bind(console)
 
   const taskManager = await runa()
   taskManager.startAllTasks()
-  const port = 8008
   runServer({ taskManager, port })
 
   const { stdin } = process
