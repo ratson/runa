@@ -47,5 +47,10 @@
     "task",
     "runner",
     "spawn"
-  ]
+  ],
+  "eslintConfig": {
+    "extends": [
+      "concise-jest"
+    ]
+  }
 }
