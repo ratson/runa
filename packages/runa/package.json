@@ -1,0 +1,51 @@
+{
+  "name": "runa",
+  "version": "0.0.7",
+  "description": "Process manager for developement with a web interface.",
+  "bin": "cli.js",
+  "scripts": {
+    "prepare": "elm-package install",
+    "prepublishOnly": "run-s build",
+    "start": "./cli.js",
+    "build": "elm-app build"
+  },
+  "dependencies": {
+    "debug": "^3.1.0",
+    "execa": "^0.8.0",
+    "lodash": "^4.17.4",
+    "opn": "^5.1.0",
+    "pkg-conf": "^2.0.0",
+    "read-pkg": "^3.0.0",
+    "restify": "^6.3.4",
+    "split": "^1.0.1",
+    "yargs": "^10.0.3",
+    "z": "^1.0.3"
+  },
+  "devDependencies": {
+    "create-elm-app": "^1.10.0",
+    "npm-run-all": "^4.1.2"
+  },
+  "repository": "ratson/runa",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 8"
+  },
+  "files": [
+    "*.md",
+    "index.js",
+    "cli.js",
+    "server.js",
+    "build"
+  ],
+  "keywords": [
+    "process",
+    "manager",
+    "cli",
+    "elm",
+    "supervisor",
+    "supervisord",
+    "task",
+    "runner",
+    "spawn"
+  ]
+}
