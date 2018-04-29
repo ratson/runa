@@ -1,12 +1,14 @@
 import assert from 'assert'
 
 import execa from 'execa'
+import nanoid from 'nanoid'
 
 const RUNNING = Symbol('RUNNING')
 const STOPPED = Symbol('STOPPED')
 
 class Task {
   constructor(raw) {
+    this.id = nanoid()
     this._raw = raw
     this._status = STOPPED
   }
@@ -33,6 +35,13 @@ class Task {
       await this._raw.start()
     }
     this._status = RUNNING
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      status: this.status,
+    }
   }
 }
 

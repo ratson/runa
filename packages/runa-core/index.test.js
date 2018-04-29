@@ -47,3 +47,14 @@ test('registerChildProcess() require command is array with at least one element'
   t.throws(() => runa.registerChildProcess({ command: [] }))
   t.notThrows(() => runa.registerChildProcess({ command: ['pwd'] }))
 })
+
+test('tasks can be JSON.strinify', t => {
+  const runa = Runa.create()
+  runa.register({
+    start() {},
+  })
+  const task = runa.tasks[0]
+  task.id = 'fakeId'
+
+  t.is(JSON.stringify(runa.tasks), '[{"id":"fakeId","status":"STOPPED"}]')
+})
