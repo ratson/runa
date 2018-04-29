@@ -6,9 +6,7 @@ test('register()', async t => {
   const runa = Runa.create()
   t.is(runa.tasks.length, 0)
 
-  runa.register({
-    start() {},
-  })
+  runa.register({ start() {} })
   const { tasks } = runa
   t.is(tasks.length, 1)
 
@@ -50,11 +48,18 @@ test('registerChildProcess() require command is array with at least one element'
 
 test('tasks can be JSON.strinify', t => {
   const runa = Runa.create()
-  runa.register({
-    start() {},
-  })
+  runa.register({ start() {} })
   const task = runa.tasks[0]
   task.id = 'fakeId'
 
   t.is(JSON.stringify(runa.tasks), '[{"id":"fakeId","status":"STOPPED"}]')
+})
+
+test('findTask()', t => {
+  const runa = Runa.create()
+  runa.register({ start() {} })
+  const task = runa.tasks[0]
+
+  t.is(runa.findTask(task.id), task)
+  t.is(runa.findTask('wrong-id'), undefined)
 })

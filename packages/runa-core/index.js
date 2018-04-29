@@ -55,6 +55,10 @@ class TaskManager {
     return this._tasks.slice()
   }
 
+  findTask(taskId) {
+    return this.tasks.find(({ id }) => id === taskId)
+  }
+
   register(task) {
     const enhancedTask = new Task(task)
     this._tasks.push(enhancedTask)
