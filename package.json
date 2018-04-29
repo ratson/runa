@@ -30,7 +30,8 @@
   },
   "ava": {
     "files": [
-      "packages/runa-core/*.test.js"
+      "packages/runa-core/*.test.js",
+      "packages/runa-server/*.test.js"
     ],
     "sources": [
       "**/*.js"

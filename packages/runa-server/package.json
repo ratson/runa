@@ -1,0 +1,22 @@
+{
+  "name": "runa-server",
+  "version": "0.0.0",
+  "main": "main.js",
+  "module": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^3.1.0",
+    "esm": "^3.0.28",
+    "restify": "^6.3.4"
+  },
+  "devDependencies": {
+    "runa-core": "^0.0.0",
+    "sinon": "^4.5.0",
+    "supertest": "^3.0.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "concise-ava"
+    ]
+  }
+}
