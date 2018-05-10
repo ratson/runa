@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint --ignore-path .gitignore .",
     "test": "run-s test:*",
-    "test:elm": "cd packages/runa; elm-app test",
+    "test:elm": "cd packages/runa-ui-elm; elm-app test",
     "test:jest": "cd packages/runa; jest",
     "precommit": "lint-staged",
     "prepush": "run-s test"

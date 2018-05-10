@@ -1,8 +1,7 @@
 'use strict'
 
-const Path = require('path')
-
 const restify = require('restify')
+const { publicPath } = require('runa-ui-elm')
 
 const pkg = require('./package.json')
 
@@ -37,9 +36,9 @@ function runServer({ taskManager, port }) {
   server.get(
     /\/.*/,
     serveStatic({
-      directory: Path.join(__dirname, 'build'),
+      directory: publicPath,
       default: 'index.html',
-    })
+    }),
   )
 
   server.listen(port, '127.0.0.1', () => {
