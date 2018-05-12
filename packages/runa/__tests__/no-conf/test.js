@@ -1,8 +1,8 @@
-'use strict'
+import test from 'ava'
 
-const runa = require('../..')
+import runa from '../..'
 
-it('can run without error', async () => {
+test('can run without error', async t => {
   const { tasks } = await runa({ cwd: __dirname })
-  expect(tasks).toEqual({})
+  t.deepEqual(tasks, {})
 })

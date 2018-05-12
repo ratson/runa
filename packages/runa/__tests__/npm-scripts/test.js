@@ -1,14 +1,13 @@
-'use strict'
+import test from 'ava'
+import execa from 'execa'
 
-const execa = require('execa')
-
-it('run npm script', async () => {
+test('run npm script', async t => {
   const { stdout } = await execa(
     'node',
     [require.resolve('../../cli.js'), 'build'],
     {
       cwd: __dirname,
-    }
+    },
   )
-  expect(stdout).toMatch(/^v[\d]+\.[\d]+/)
+  t.regex(stdout, /^v[\d]+\.[\d]+/)
 })

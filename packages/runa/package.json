@@ -14,6 +14,9 @@
     "pkg-conf": "^2.0.0",
     "read-pkg": "^3.0.0",
     "restify": "^6.3.4",
+    "runa-core": "^0.0.0",
+    "runa-server": "^0.0.0",
+    "runa-ui-elm": "^0.0.0",
     "split": "^1.0.1",
     "yargs": "^10.0.3",
     "z": "^1.0.3"
@@ -41,10 +44,5 @@
     "task",
     "runner",
     "spawn"
-  ],
-  "eslintConfig": {
-    "extends": [
-      "concise-jest"
-    ]
-  }
+  ]
 }

@@ -1,23 +1,23 @@
-'use strict'
+import test from 'ava'
 
-const execa = require('execa')
+import execa from 'execa'
 
-it('show help', async () => {
+test('show help', async t => {
   const { stdout } = await execa('./cli.js', ['--help'], { cwd: __dirname })
-  expect(stdout).toMatch(/--help/)
-  expect(stdout).toMatch(/--port[^\n]+default: 8008/)
+  t.regex(stdout, /--help/)
+  t.regex(stdout, /--port[^\n]+default: 8008/)
 })
 
-it('show version', async () => {
+test('show version', async t => {
   const { stdout } = await execa('./cli.js', ['--version'], { cwd: __dirname })
-  expect(stdout).toMatch(/\d+\.\d+\.\d+/)
+  t.regex(stdout, /\d+\.\d+\.\d+/)
 })
 
-it('fail for missing script', async () => {
+test('fail for missing script', async t => {
   const { code, stderr } = await execa('./cli.js', ['missing-script'], {
     cwd: __dirname,
     reject: false,
   })
-  expect(code).toBe(1)
-  expect(stderr).toMatch(/missing-script/)
+  t.is(code, 1)
+  t.regex(stderr, /missing-script/)
 })

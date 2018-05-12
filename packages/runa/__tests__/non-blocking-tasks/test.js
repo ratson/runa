@@ -1,29 +1,23 @@
-'use strict'
+import test from 'ava'
+import _ from 'lodash'
+import execa from 'execa'
 
-const _ = require('lodash')
-const execa = require('execa')
+import runa from '../..'
 
-const runa = require('../..')
-
-it('can run tasks', async () => {
+test('can run tasks', async t => {
   const { tasks } = await runa({ cwd: __dirname })
-  expect(_.size(tasks)).toBe(2)
+  t.is(_.size(tasks), 2)
 
-  expect(await tasks['node-version'].start()).toEqual(
-    expect.objectContaining({
-      code: 0,
-      stdout: expect.stringMatching(/v\d+\.\d+\.\d+/),
-    })
-  )
-  expect(await tasks['npm-version'].start()).toEqual(
-    expect.objectContaining({
-      code: 0,
-      stdout: expect.stringMatching(/\d+\.\d+\.\d+/),
-    })
-  )
+  const nodeVersion = await tasks['node-version'].start()
+  t.is(nodeVersion.code, 0)
+  t.regex(nodeVersion.stdout, /v\d+\.\d+\.\d+/)
+
+  const npmVersion = await tasks['npm-version'].start()
+  t.is(npmVersion.code, 0)
+  t.regex(npmVersion.stdout, /\d+\.\d+\.\d+/)
 })
 
-it('can run from cli', async () => {
+test('can run from cli', async t => {
   const p = execa('node', [require.resolve('../../cli.js')], {
     cwd: __dirname,
   })
@@ -33,5 +27,5 @@ it('can run from cli', async () => {
     }
   })
   const { stdout } = await p.catch(err => err)
-  expect(stdout).toMatch(/v.+/)
+  t.regex(stdout, /v.+/)
 })
