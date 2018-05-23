@@ -1,12 +1,11 @@
 {
   "name": "runa-ui-elm",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "prepare": "elm-package install",
     "prepublishOnly": "run-s build",
     "build": "elm-app build"
   },
-  "dependencies": {},
   "devDependencies": {
     "create-elm-app": "^1.10.4",
     "npm-run-all": "^4.1.3"
