@@ -66,11 +66,13 @@ class TaskManager {
     if (this.autoStart) {
       enhancedTask.start()
     }
+
+    return enhancedTask
   }
 
   registerChildProcess({ command, ...opts }) {
     assert(Array.isArray(command) && command.length >= 1)
-    this.register({
+    return this.register({
       start() {
         this.process = execa(command[0], command.slice(1), {
           killSignal: 'SIGTINT',

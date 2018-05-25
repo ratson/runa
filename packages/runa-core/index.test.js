@@ -6,11 +6,10 @@ test('register()', async t => {
   const runa = Runa.create()
   t.is(runa.tasks.length, 0)
 
-  runa.register({ start() {} })
+  const task = runa.register({ start() {} })
   const { tasks } = runa
   t.is(tasks.length, 1)
-
-  const task = tasks[0]
+  t.is(task, tasks[0])
   t.is(task.status, 'STOPPED')
 
   await task.start()
@@ -22,8 +21,8 @@ test('register()', async t => {
 test('registerChildProcess()', async t => {
   const runa = Runa.create({ autoStart: true })
 
-  runa.registerChildProcess({ command: ['sleep', 10] })
-  const task = runa.tasks[0]
+  const task = runa.registerChildProcess({ command: ['sleep', 10] })
+  t.is(task, runa.tasks[0])
 
   await task.stop()
   t.is(task.status, 'STOPPED')
