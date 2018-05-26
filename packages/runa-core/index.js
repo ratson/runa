@@ -1,4 +1,5 @@
 import assert from 'assert'
+import EventEmitter from 'events'
 
 import execa from 'execa'
 import nanoid from 'nanoid'
@@ -6,8 +7,10 @@ import nanoid from 'nanoid'
 const RUNNING = Symbol('RUNNING')
 const STOPPED = Symbol('STOPPED')
 
-class Task {
+class Task extends EventEmitter {
   constructor(raw) {
+    super()
+
     this.id = nanoid()
     this._raw = raw
     this._status = STOPPED
@@ -19,12 +22,12 @@ class Task {
 
   async start() {
     await this._raw.start()
-    this._status = RUNNING
+    this._updateStatus(RUNNING)
   }
 
   async stop() {
     await this._raw.stop()
-    this._status = STOPPED
+    this._updateStatus(STOPPED)
   }
 
   async restart() {
@@ -34,7 +37,20 @@ class Task {
       await this._raw.stop()
       await this._raw.start()
     }
-    this._status = RUNNING
+    this._updateStatus(RUNNING)
+  }
+
+  _updateStatus(newStatus) {
+    if (this._status === newStatus) {
+      return
+    }
+    const oldStatus = this.status
+    this._status = newStatus
+    this.emit('status-change', {
+      task: this,
+      oldStatus,
+      newStatus: this.status,
+    })
   }
 
   toJSON() {

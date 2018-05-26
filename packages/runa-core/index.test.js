@@ -7,6 +7,12 @@ test('register()', async t => {
   t.is(runa.tasks.length, 0)
 
   const task = runa.register({ start() {} })
+  task.on('status-change', payload => {
+    t.is(task, payload.task)
+    t.is(payload.oldStatus, 'STOPPED')
+    t.is(payload.newStatus, 'RUNNING')
+  })
+
   const { tasks } = runa
   t.is(tasks.length, 1)
   t.is(task, tasks[0])
