@@ -9,6 +9,7 @@
   "dependencies": {
     "runa-core": "^0.2.0",
     "sane": "^2.5.2",
+    "signale": "^1.1.0",
     "yargs": "^10.0.3"
   },
   "repository": "ratson/runa",

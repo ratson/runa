@@ -6,6 +6,7 @@ import nanoid from 'nanoid'
 
 const RUNNING = Symbol('RUNNING')
 const STOPPED = Symbol('STOPPED')
+const RESTARTING = Symbol('RESTARTING')
 
 class Task extends EventEmitter {
   constructor(raw) {
@@ -31,6 +32,7 @@ class Task extends EventEmitter {
   }
 
   async restart() {
+    this._updateStatus(RESTARTING)
     if (this._raw.restart) {
       await this._raw.restart()
     } else {
