@@ -1,6 +1,7 @@
 'use strict'
 
 const Path = require('path')
+const keypress = require('keypress')
 const sane = require('sane')
 const signale = require('signale')
 const yargs = require('yargs')
@@ -31,6 +32,37 @@ async function main() {
       signale.info(`${filepath} has changed, restarting`)
       await watchingTask.restart()
     })
+
+    keypress(process.stdin)
+    const keys = {
+      'ctrl-c': '\u0003',
+    }
+    process.stdin.on('keypress', async (ch, key) => {
+      if (!key) {
+        return
+      }
+
+      if (key.name === 'return') {
+        signale.info('press r to restart script')
+        return
+      }
+
+      if (key.name === 'r') {
+        await watchingTask.restart()
+        return
+      }
+
+      if (key.sequence === keys['ctrl-c'] || key.name === 'q') {
+        watcher.close()
+        process.stdin.setRawMode(false)
+        process.stdin.pause()
+        process.stdout.write('\n')
+        // eslint-disable-next-line unicorn/no-process-exit
+        process.exit()
+      }
+    })
+    process.stdin.setRawMode(true)
+    process.stdin.resume()
 
     await watchingTask.start()
   }
