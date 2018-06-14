@@ -1,6 +1,6 @@
 {
   "name": "runa",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Process manager for developement with a web interface.",
   "bin": "cli.js",
   "scripts": {
@@ -14,9 +14,9 @@
     "pkg-conf": "^2.0.0",
     "read-pkg": "^3.0.0",
     "restify": "^6.3.4",
-    "runa-core": "^0.2.0",
-    "runa-server": "^0.2.0",
-    "runa-ui-elm": "^0.1.0",
+    "runa-core": "^0.3.0",
+    "runa-server": "^0.3.0",
+    "runa-ui-elm": "^0.3.0",
     "split": "^1.0.1",
     "yargs": "^10.0.3",
     "z": "^1.0.3"

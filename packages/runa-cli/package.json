@@ -1,6 +1,6 @@
 {
   "name": "runa-cli",
-  "version": "0.0.0",
+  "version": "0.3.0",
   "description": "Process manager for developement with a web interface.",
   "bin": "cli.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "dependencies": {
     "keypress": "^0.2.1",
     "read-pkg": "^3.0.0",
-    "runa-core": "^0.2.0",
+    "runa-core": "^0.3.0",
     "sane": "^2.5.2",
     "signale": "^1.2.0",
     "yargs": "^11.0.0"

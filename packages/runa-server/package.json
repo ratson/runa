@@ -1,6 +1,6 @@
 {
   "name": "runa-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "main": "main.js",
   "module": "index.js",
   "license": "MIT",
@@ -10,7 +10,7 @@
     "restify": "^7.2.1"
   },
   "devDependencies": {
-    "runa-core": "^0.2.0",
+    "runa-core": "^0.3.0",
     "sinon": "^6.0.0",
     "supertest": "^3.1.0"
   },
