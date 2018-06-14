@@ -2,6 +2,7 @@
 
 const Path = require('path')
 const keypress = require('keypress')
+const readPkg = require('read-pkg')
 const sane = require('sane')
 const signale = require('signale')
 const yargs = require('yargs')
@@ -10,15 +11,30 @@ const { default: Runa } = require('runa-core')
 
 async function main() {
   const { argv } = yargs
+    .usage('$0 [command]')
     .option('watch', {
       alias: 'w',
       type: 'string',
     })
     .version()
     .help()
+  const [command] = argv._
 
-  if (argv.watch) {
-    const runa = Runa.create()
+  const runa = Runa.create()
+
+  if (command) {
+    const { scripts } = await readPkg()
+    if (!scripts || !scripts[command]) {
+      signale.error(`Command "${command}" not found.`)
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(1)
+    }
+    const task = runa.registerChildProcess({
+      command: scripts[command],
+      stdio: 'inherit',
+    })
+    await task.start()
+  } else if (argv.watch) {
     const watchingTask = runa.registerChildProcess({
       command: ['node', Path.resolve(process.cwd(), argv.watch)],
       stdio: 'inherit',
@@ -63,6 +79,7 @@ async function main() {
     })
     process.stdin.setRawMode(true)
     process.stdin.resume()
+    signale.info('press r to restart script')
 
     await watchingTask.start()
   }

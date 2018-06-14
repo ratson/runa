@@ -5,9 +5,9 @@
   "module": "index.js",
   "license": "MIT",
   "dependencies": {
-    "esm": "^3.0.37",
+    "esm": "^3.0.49",
     "execa": "^0.10.0",
-    "nanoid": "^1.0.2"
+    "nanoid": "^1.0.3"
   },
   "eslintConfig": {
     "extends": [

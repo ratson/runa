@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "keypress": "^0.2.1",
+    "read-pkg": "^3.0.0",
     "runa-core": "^0.2.0",
     "sane": "^2.5.2",
     "signale": "^1.2.0",
