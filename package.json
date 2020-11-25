@@ -5,7 +5,7 @@
   "description": "Process manager for developement with a web interface.",
   "bin": "cli.js",
   "scripts": {
-    "lint": "eslint --ignore-path .gitignore .",
+    "lint": "xo",
     "test": "run-s test:*",
     "test:ava": "ava",
     "test:elm": "cd packages/runa-ui-elm; elm-app test",
@@ -16,32 +16,33 @@
     "ava": "^1.0.0-beta.4",
     "bluebird": "^3.5.1",
     "create-elm-app": "^1.10.4",
-    "eslint": "^4.19.1",
-    "eslint-config-concise": "^0.26.0",
-    "eslint-config-concise-ava": "^0.23.0",
-    "eslint-config-concise-browser": "^0.26.0",
-    "eslint-config-concise-esnext": "^0.24.1",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-config-xo": "^0.33.1",
+    "eslint-plugin-ava": "^11.0.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-no-use-extend-native": "^0.5.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-unicorn": "^23.0.0",
     "fast-glob": "^2.2.2",
     "husky": "^4.3.0",
-    "lerna": "^3.0.0-beta.18",
+    "lerna": "^3.22.1",
     "lint-staged": "^7.2.0",
     "npm-run-all": "^4.1.3",
-    "preslint": "^0.25.0"
+    "prettier": "^2.2.0",
+    "xo": "^0.35.0"
   },
   "ava": {
     "sources": [
       "**/*.js"
     ]
   },
-  "eslintConfig": {
-    "extends": [
-      "concise",
-      "concise-esnext"
-    ]
-  },
   "lint-staged": {
     "*.js": [
-      "preslint --fix --git"
+      "xo --fix"
     ]
   },
   "runa": {
@@ -49,6 +50,16 @@
       "elm": "elm-app start",
       "timer": "node scripts/timer.js"
     }
+  },
+  "prettier": {
+    "semi": false,
+    "useTabs": false
+  },
+  "xo": {
+    "prettier": true,
+    "ignores": [
+      "packages/**"
+    ]
   },
   "workspaces": [
     "packages/*"
