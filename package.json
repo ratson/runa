@@ -5,6 +5,8 @@
   "description": "Process manager for developement with a web interface.",
   "bin": "cli.js",
   "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b -w",
     "lint": "xo",
     "test": "run-s test:*",
     "test:ava": "ava",
@@ -16,7 +18,6 @@
     "@rushstack/eslint-patch": "^1.0.6",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
-    "bluebird": "^3.5.1",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-config-xo": "^0.33.1",
@@ -30,7 +31,6 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-unicorn": "^23.0.0",
-    "fast-glob": "^2.2.2",
     "husky": "^4.3.0",
     "lerna": "^3.22.1",
     "lint-staged": "^10.5.2",
@@ -51,6 +51,7 @@
     }
   },
   "prettier": {
+    "bracketSpacing": true,
     "semi": false,
     "singleQuote": false,
     "useTabs": false
