@@ -1,5 +1,5 @@
 import assert from "assert"
-import { spawn } from "child_process"
+import cp from "child_process"
 import delay from "delay"
 import fse from "fs-extra"
 import fsp from "fs/promises"
@@ -78,11 +78,10 @@ class Daemon {
   }
 
   private spawnServer() {
-    const subprocess = spawn(
-      process.argv[0],
-      [require.resolve("../dist/server.js")],
-      { detached: true, stdio: "ignore" }
-    )
+    const subprocess = cp.fork(require.resolve("../dist/server.js"), {
+      detached: true,
+      stdio: "ignore",
+    })
     subprocess.unref()
   }
 }
