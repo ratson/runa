@@ -1,11 +1,21 @@
 import { spawn } from "child_process"
 import fs from "fs"
-import { socketPath } from "./server"
+import fsp from "fs/promises"
+import fse from "fs-extra"
+import isRunning from "is-running"
+import { pidPath, socketPath } from "./server"
 
-const isDaemonRunning = () => fs.existsSync(socketPath)
+const isDaemonRunning = async () => {
+  try {
+    const pid = await fsp.readFile(pidPath, "utf-8")
+    return isRunning(Number.parseInt(pid, 10))
+  } catch {}
+
+  return false
+}
 
 const spawnDaemonProcess = async () => {
-  if (isDaemonRunning()) {
+  if (await isDaemonRunning()) {
     return false
   }
 
