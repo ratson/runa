@@ -10,13 +10,10 @@
   },
   "dependencies": {
     "@runa/daemon": "link:../daemon",
-    "fs-extra": "^9.0.1",
     "got": "^11.8.0",
-    "tempy": "^1.0.0",
     "yargs": "^16.1.1"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.4",
     "@types/node": "^14.14.10",
     "@types/yargs": "^15.0.10",
     "typescript": "^4.1.2"

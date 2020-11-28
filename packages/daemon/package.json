@@ -8,10 +8,12 @@
   },
   "dependencies": {
     "@runa/server": "link:../server",
+    "delay": "^4.4.0",
     "env-paths": "^2.2.0",
     "fs-extra": "^9.0.1",
     "is-running": "^2.1.0",
-    "signal-exit": "^3.0.3"
+    "signal-exit": "^3.0.3",
+    "tempy": "^1.0.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.4",
