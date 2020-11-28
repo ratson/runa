@@ -5,6 +5,7 @@ import onExit from "signal-exit"
 import { pidPath, serverId, socketPath } from "./config"
 import { Event, ProcessStartData } from "./event"
 
+process.title = serverId
 ipc.config.id = serverId
 
 const logger = pino()
@@ -16,6 +17,7 @@ const bindEvents = () => {
 }
 
 const cleanup = () => {
+  logger.info("exiting...")
   fse.removeSync(pidPath)
   fse.removeSync(socketPath)
 }

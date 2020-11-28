@@ -41,6 +41,12 @@ class Daemon {
     })
   }
 
+  async shutdown() {
+    if (await this.isRunning()) {
+      process.kill(this.#pid!)
+    }
+  }
+
   private assertReady() {
     assert(this.#pid, "pid is missing, call init() first")
     assert(this.#serverPath, "serverPath is missing, call init() first")

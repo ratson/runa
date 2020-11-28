@@ -7,7 +7,7 @@ const dataPath = paths.data
 const pidPath = path.join(paths.data, "server.pid")
 const socketPath = path.join(dataPath, "server.sock")
 
-const serverId = "server"
+const serverId = "runa-daemon"
 ipc.config.silent = true
 ipc.config.socketRoot = dataPath + "/"
 

@@ -2,11 +2,16 @@
   "name": "runa",
   "version": "0.3.0",
   "description": "An extensible, daemonized process manager.",
-  "bin": "dist/cli.js",
+  "bin": {
+    "runa": "dist/cli.js",
+    "runa-daemon": "dist/daemon-cli.js"
+  },
   "types": "dist/index.d.ts",
   "scripts": {
     "start": "node ./dist/cli.js",
-    "prepack": "tsc"
+    "prepack": "tsc",
+    "runa": "node dist/cli.js",
+    "runa-daemon": "node dist/daemon-cli.js"
   },
   "dependencies": {
     "@runa/daemon": "link:../daemon",
