@@ -12,3 +12,5 @@ ipc.config.silent = true
 ipc.config.socketRoot = dataPath + "/"
 
 export { dataPath, pidPath, serverId, socketPath }
+
+export const logDir = (...args: string[]) => path.join(paths.log, ...args)

@@ -6,7 +6,7 @@ import isRunning from "is-running"
 import ipc from "node-ipc"
 import path from "path"
 import tempy from "tempy"
-import { pidPath, serverId, socketPath } from "./config"
+import { logDir, pidPath, serverId, socketPath } from "./config"
 
 export * from "./event"
 
@@ -48,8 +48,7 @@ class Daemon {
 
   private async spawn() {
     if (!(await this.isRunning())) {
-      this.spawnServer()
-      await this.waitServerReady()
+      await this.spawnServer()
     }
 
     if (socketPath === encodeURIComponent(socketPath)) {
@@ -87,12 +86,21 @@ class Daemon {
     return Number.parseInt(pid, 10)
   }
 
-  private spawnServer() {
+  private async spawnServer() {
+    await fse.ensureDir(logDir(), { mode: 0o700 })
+
     const subprocess = cp.fork(require.resolve("../dist/server.js"), {
       detached: true,
-      stdio: "ignore",
+      stdio: [
+        "ignore",
+        fse.openSync(logDir("server.stdout.log"), "a"),
+        fse.openSync(logDir("server.stderr.log"), "a"),
+        "ipc",
+      ],
     })
     subprocess.unref()
+
+    await this.waitServerReady()
   }
 }
 
