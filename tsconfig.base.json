@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "composite": true,
-    "target": "esnext",
-    "module": "commonjs",
-    "strict": true,
-    "skipLibCheck": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "module": "commonjs",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext"
   }
 }
