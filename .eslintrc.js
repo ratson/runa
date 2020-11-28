@@ -1,3 +1,5 @@
+const pkg = require("./package.json")
+
 require("@rushstack/eslint-patch/modern-module-resolution")
 
 module.exports = {
@@ -14,5 +16,8 @@ module.exports = {
   parserOptions: {
     project: ["tsconfig.json", "packages/*/tsconfig.json"],
   },
-  rules: {},
+  rules: {
+    ...pkg.xo.rules,
+    "unicorn/prevent-abbreviations": "off",
+  },
 }

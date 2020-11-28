@@ -54,13 +54,17 @@
     "bracketSpacing": true,
     "semi": false,
     "singleQuote": false,
+    "trailingComma": "all",
     "useTabs": false
   },
   "xo": {
     "prettier": true,
     "ignores": [
       "archived/"
-    ]
+    ],
+    "rules": {
+      "unicorn/prevent-abbreviations": "off"
+    }
   },
   "workspaces": [
     "packages/*"
