@@ -1,8 +1,10 @@
-import daemon from "@runa/daemon"
-import got from "got"
+import daemon, { Event } from "@runa/daemon"
+import execa from "execa"
+import which from "which"
 import yargs from "yargs"
 // @ts-expect-error
 import { hideBin } from "yargs/helpers"
+
 
 const main = async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -13,14 +15,38 @@ const main = async () => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       () => {},
       async (argv) => {
-        console.log("this command will be run by default", argv)
+        if (argv._.length === 0) {
+          yargs.showHelp()
+          return
+        }
+
+        const cmd = argv._[0]
+        try {
+          await which(cmd)
+        } catch {
+          console.error(`Unknown command: ${cmd}`)
+          return
+        }
+
+        const p = execa(cmd, argv._.slice(1), {
+          stdio: "inherit",
+          reject: false,
+        })
 
         await daemon.init()
+        daemon.connect((server) => {
+          server.emit(Event.ProcessStart, { pid: process.pid })
+        })
 
-        const respond = await got(daemon.url("/ping"))
-
-        console.log(respond.body)
-      }
+        try {
+          await p
+        } catch {
+          console.log("failed")
+        } finally {
+          // eslint-disable-next-line unicorn/no-process-exit
+          process.exit(p.exitCode || 0)
+        }
+      },
     )
     .help().argv
 }

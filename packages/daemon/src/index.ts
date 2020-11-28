@@ -2,11 +2,13 @@ import assert from "assert"
 import cp from "child_process"
 import delay from "delay"
 import fse from "fs-extra"
-import fsp from "fs/promises"
 import isRunning from "is-running"
+import ipc from "node-ipc"
 import path from "path"
 import tempy from "tempy"
-import { pidPath, socketPath } from "./server"
+import { pidPath, serverId, socketPath } from "./config"
+
+export * from "./event"
 
 class Daemon {
   #pid?: number
@@ -29,6 +31,14 @@ class Daemon {
     }
 
     return this.#spawnPromise
+  }
+
+  connect(callback?: (server: typeof ipc.server) => void) {
+    ipc.connectTo(serverId, socketPath, () => {
+      if (callback) {
+        callback(ipc.of[serverId])
+      }
+    })
   }
 
   private assertReady() {
@@ -73,7 +83,7 @@ class Daemon {
   }
 
   private async readPID() {
-    const pid = await fsp.readFile(pidPath, "utf-8")
+    const pid = await fse.readFile(pidPath, "utf-8")
     return Number.parseInt(pid, 10)
   }
 
