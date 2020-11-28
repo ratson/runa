@@ -12,14 +12,27 @@ const logger = pino()
 
 const bindEvents = () => {
   ipc.server.on(Event.ProcessStart, (data: ProcessStartData, socket) => {
-    logger.info("process started: %o", data.pid)
+    logger.info("process started: %o", data)
+  })
+
+  ipc.server.on("connect", () => {
+    logger.info("connect")
+  })
+  ipc.server.on("destroy", () => {
+    logger.info("destroy")
+  })
+  ipc.server.on("error", (error) => {
+    logger.info("error %o", error)
+  })
+  ipc.server.on("socket.disconnected", (socket, destroyedSocketID) => {
+    logger.info("socket.disconnected %o", destroyedSocketID)
   })
 }
 
 const cleanup = () => {
   logger.info("exiting...")
+  ipc.server.stop()
   fse.removeSync(pidPath)
-  fse.removeSync(socketPath)
 }
 
 const main = async () => {
