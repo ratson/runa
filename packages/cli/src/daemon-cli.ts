@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import daemon from "@runa/daemon"
+import daemon from "@runapm/daemon"
 import Table from "cli-table3"
 import { prompt } from "enquirer"
 import yargs from "yargs"

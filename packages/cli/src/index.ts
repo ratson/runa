@@ -1,4 +1,4 @@
-import daemon from "@runa/daemon"
+import daemon from "@runapm/daemon"
 import execa from "execa"
 import exit from "exit"
 import PQueue from "p-queue"

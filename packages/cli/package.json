@@ -14,7 +14,7 @@
     "runa-daemon": "node dist/daemon-cli.js"
   },
   "dependencies": {
-    "@runa/daemon": "link:../daemon",
+    "@runapm/daemon": "link:../daemon",
     "cli-table3": "^0.6.0",
     "enquirer": "^2.3.6",
     "execa": "^4.1.0",
