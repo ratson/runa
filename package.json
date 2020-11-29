@@ -15,6 +15,8 @@
     "prepush": "run-s test"
   },
   "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@rushstack/eslint-patch": "^1.0.6",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
@@ -39,16 +41,21 @@
     "typescript": "^4.1.2",
     "xo": "^0.35.0"
   },
-  "lint-staged": {
-    "*.js": [
-      "xo --fix"
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
     ]
   },
-  "runa": {
-    "tasks": {
-      "elm": "elm-app start",
-      "timer": "node scripts/timer.js"
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "xo --fix"
+    ]
   },
   "prettier": {
     "bracketSpacing": true,
