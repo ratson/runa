@@ -1,5 +1,6 @@
 import daemon, { Event } from "@runa/daemon"
 import execa from "execa"
+import exit from "exit"
 import which from "which"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
@@ -38,8 +39,7 @@ const main = async () => {
         } catch {
           console.log("failed")
         } finally {
-          // eslint-disable-next-line unicorn/no-process-exit
-          process.exit(p.exitCode ?? 0)
+          exit(p.exitCode ?? 0)
         }
       },
     )
