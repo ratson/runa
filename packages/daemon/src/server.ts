@@ -94,6 +94,19 @@ const cleanup = () => {
   fse.removeSync(pidPath)
 }
 
+const idleTimeout = 1000 * 60 * 30
+const stopOnIdle = () => {
+  logger.info("idle check %s", processes.length)
+  removeDeadProcesses()
+
+  if (processes.length === 0) {
+    logger.info("stop on idle")
+    ipc.server.stop()
+  } else {
+    setTimeout(stopOnIdle, idleTimeout)
+  }
+}
+
 const main = async () => {
   onExit(cleanup)
 
@@ -103,6 +116,7 @@ const main = async () => {
 
   ipc.serve(socketPath, bindEvents)
   ipc.server.start()
+  setTimeout(stopOnIdle, idleTimeout)
 }
 
 if (require.main === module) void main()
