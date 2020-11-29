@@ -30,10 +30,8 @@ const main = async () => {
           reject: false,
         })
 
-        await daemon.init()
-        daemon.connect((server) => {
-          server.emit(Event.ProcessStart, { pid: process.pid })
-        })
+        const server = await daemon.connect()
+        server.emit(Event.ProcessStart, { pid: process.pid })
 
         try {
           await p
@@ -41,7 +39,7 @@ const main = async () => {
           console.log("failed")
         } finally {
           // eslint-disable-next-line unicorn/no-process-exit
-          process.exit(p.exitCode || 0)
+          process.exit(p.exitCode ?? 0)
         }
       },
     )

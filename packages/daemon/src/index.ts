@@ -33,11 +33,13 @@ class Daemon {
     return this.#spawnPromise
   }
 
-  connect(callback?: (server: typeof ipc.server) => void) {
-    ipc.connectTo(serverId, socketPath, () => {
-      if (callback) {
-        callback(ipc.of[serverId])
-      }
+  async connect(): Promise<typeof ipc.server> {
+    await this.init()
+
+    return new Promise((resolve) => {
+      ipc.connectTo(serverId, socketPath, () => {
+        resolve(ipc.of[serverId])
+      })
     })
   }
 
