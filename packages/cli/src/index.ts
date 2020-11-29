@@ -79,6 +79,7 @@ const main = async () => {
 
         const exitCode = await new CommandExecutor(argv._).run()
 
+        await daemon.notifyProcessEnd()
         await daemon.disconnect()
         exit(exitCode)
       },

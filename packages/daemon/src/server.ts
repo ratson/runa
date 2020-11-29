@@ -1,4 +1,6 @@
 import fse from "fs-extra"
+import isRunning from "is-running"
+import _ from "lodash"
 import { Socket } from "net"
 import ipc from "node-ipc"
 import pino from "pino"
@@ -7,6 +9,7 @@ import { pidPath, serverID, socketPath } from "./config"
 import {
   EventType,
   ManagedProcessData,
+  ProcessEndEvent,
   ProcessStartEvent,
   RestartProcessesEvent,
 } from "./event"
@@ -41,14 +44,24 @@ class ManagedProcess {
   }
 }
 
+const removeDeadProcesses = () => {
+  _.remove(processes, (p) => !isRunning(p.pid))
+}
+
 const bindEvents = () => {
   ipc.server.on(EventType.ProcessStart, (data: ProcessStartEvent, socket) => {
     logger.info("event: %o", data)
     processes.push(new ManagedProcess(data, socket))
   })
 
+  ipc.server.on(EventType.ProcessEnd, (data: ProcessEndEvent, socket) => {
+    logger.info("event: %o", data)
+    _.remove(processes, (p) => p.pid === data.pid)
+  })
+
   ipc.server.on(EventType.GetProcessList, (data, socket) => {
     logger.info("event: %o", data)
+    removeDeadProcesses()
     ipc.server.emit(
       socket,
       EventType.GetProcessList,

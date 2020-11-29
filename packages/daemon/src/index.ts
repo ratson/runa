@@ -34,6 +34,10 @@ class Daemon {
     await this.emit({ type: EventType.ProcessStart, pid: process.pid, command })
   }
 
+  async notifyProcessEnd() {
+    await this.emit({ type: EventType.ProcessEnd, pid: process.pid })
+  }
+
   async getProcessList() {
     await this.init()
 

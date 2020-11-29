@@ -18,7 +18,7 @@ export type ProcessStartEvent = {
 
 export type ManagedProcessData = Except<ProcessStartEvent, "type">
 
-type ProcessEndEvent = {
+export type ProcessEndEvent = {
   type: EventType.ProcessEnd
   pid: number
 }
