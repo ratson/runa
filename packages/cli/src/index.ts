@@ -7,7 +7,7 @@ import { hideBin } from "yargs/helpers"
 
 const resolveCommand = async (cmd: string) => {
   try {
-    return await which(cmd)
+    return which(cmd)
   } catch {}
 
   return false

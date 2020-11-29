@@ -5,7 +5,7 @@ import fse from "fs-extra"
 import isRunning from "is-running"
 import ipc from "node-ipc"
 import { logDir, pidPath, serverId, socketPath } from "./config"
-import { Event } from "./event"
+import { Event, EventType } from "./event"
 
 export * from "./event"
 
@@ -28,15 +28,18 @@ class Daemon {
   }
 
   async notifyProcessStart() {
-    await this.init()
-
-    this.#server!.emit(Event.ProcessStart, { pid: process.pid })
+    await this.emit({ type: EventType.ProcessStart, pid: process.pid })
   }
 
   async shutdown() {
     if (await this.isRunning()) {
       process.kill(this.#pid!)
     }
+  }
+
+  private async emit(event: Event) {
+    await this.init()
+    this.#server!.emit(event.type, event)
   }
 
   private assertReady() {

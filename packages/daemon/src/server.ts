@@ -1,18 +1,21 @@
+import { Except } from "type-fest"
 import fse from "fs-extra"
 import ipc from "node-ipc"
 import pino from "pino"
 import onExit from "signal-exit"
 import { pidPath, serverId, socketPath } from "./config"
-import { Event, ProcessStartData } from "./event"
+import { EventType, ProcessStartEvent } from "./event"
 
 process.title = serverId
 ipc.config.id = serverId
 
 const logger = pino()
+const processes = []
 
 const bindEvents = () => {
-  ipc.server.on(Event.ProcessStart, (data: ProcessStartData, socket) => {
+  ipc.server.on(EventType.ProcessStart, (data: ProcessStartEvent, socket) => {
     logger.info("process started: %o", data)
+    processes.push(data.pid)
   })
 
   ipc.server.on("connect", () => {
