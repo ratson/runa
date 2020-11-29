@@ -1,6 +1,6 @@
 {
   "name": "@runa/daemon",
-  "version": "0.0.0",
+  "version": "0.4.0-alpha.0",
   "description": "An extensible, daemonized process manager.",
   "main": "dist/index.js",
   "scripts": {
