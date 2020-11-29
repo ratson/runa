@@ -4,18 +4,18 @@ import ipc from "node-ipc"
 import pino from "pino"
 import onExit from "signal-exit"
 import { pidPath, serverID, socketPath } from "./config"
-import { EventType, ProcessStartEvent } from "./event"
+import { EventType, ProcessStartEvent, ManagedProcess } from "./event"
 
 process.title = serverID
 ipc.config.id = serverID
 
 const logger = pino()
-const processes: number[] = []
+const processes: ManagedProcess[] = []
 
 const bindEvents = () => {
   ipc.server.on(EventType.ProcessStart, (data: ProcessStartEvent, socket) => {
     logger.info("process started: %o", data)
-    processes.push(data.pid)
+    processes.push(data)
   })
 
   ipc.server.on(EventType.GetProcessList, (data, socket) => {

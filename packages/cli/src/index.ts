@@ -7,7 +7,7 @@ import { hideBin } from "yargs/helpers"
 
 const resolveCommand = async (cmd: string) => {
   try {
-    return which(cmd)
+    return await which(cmd)
   } catch {}
 
   return false
@@ -38,7 +38,11 @@ const main = async () => {
           reject: false,
         })
 
-        await daemon.notifyProcessStart()
+        await daemon.notifyProcessStart({
+          args: argv._,
+          cwd: process.cwd(),
+          pid: p.pid,
+        })
 
         try {
           await p

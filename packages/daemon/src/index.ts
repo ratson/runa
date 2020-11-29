@@ -5,7 +5,7 @@ import fse from "fs-extra"
 import isRunning from "is-running"
 import ipc from "node-ipc"
 import { logDir, pidPath, serverID, socketPath } from "./config"
-import { Event, EventType } from "./event"
+import { Event, EventType, ManagedProcess } from "./event"
 
 export * from "./event"
 
@@ -30,14 +30,14 @@ class Daemon {
     }
   }
 
-  async notifyProcessStart() {
-    await this.emit({ type: EventType.ProcessStart, pid: process.pid })
+  async notifyProcessStart(command: ManagedProcess["command"]) {
+    await this.emit({ type: EventType.ProcessStart, pid: process.pid, command })
   }
 
   async getProcessList() {
     await this.init()
 
-    const p = new Promise((resolve) => {
+    const p = new Promise<ManagedProcess[]>((resolve) => {
       const handler = (data: any) => {
         this.#server?.off(EventType.GetProcessList, handler)
         resolve(data)
