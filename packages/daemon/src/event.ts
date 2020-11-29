@@ -1,6 +1,7 @@
 export enum EventType {
   ProcessStart = "runa.process-start",
   ProcessEnd = "runa.process-end",
+  GetProcessList = "runa.get-process-list",
 }
 
 export type ProcessStartEvent = {
@@ -13,4 +14,7 @@ type ProcessEndEvent = {
   pid: number
 }
 
-export type Event = ProcessStartEvent | ProcessEndEvent
+export type Event =
+  | ProcessStartEvent
+  | ProcessEndEvent
+  | { type: EventType.GetProcessList }

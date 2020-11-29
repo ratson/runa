@@ -5,6 +5,10 @@ import { hideBin } from "yargs/helpers"
 
 const main = async () => {
   void yargs(hideBin(process.argv))
+    .command("list", "list running processes", async () => {
+      console.log(await daemon.getProcessList())
+      await daemon.disconnect()
+    })
     .command("shutdown", "shutdown daemon process", async () => {
       await daemon.shutdown()
       console.log("shutdown daemon")

@@ -4,7 +4,7 @@ import delay from "delay"
 import fse from "fs-extra"
 import isRunning from "is-running"
 import ipc from "node-ipc"
-import { logDir, pidPath, serverId, socketPath } from "./config"
+import { logDir, pidPath, serverID, socketPath } from "./config"
 import { Event, EventType } from "./event"
 
 export * from "./event"
@@ -24,11 +24,36 @@ class Daemon {
       this.#spawnPromise = this.spawn()
     }
 
-    return this.#spawnPromise
+    await this.#spawnPromise
+    if (!this.#server) {
+      this.#server = await this.connect()
+    }
   }
 
   async notifyProcessStart() {
     await this.emit({ type: EventType.ProcessStart, pid: process.pid })
+  }
+
+  async getProcessList() {
+    await this.init()
+
+    const p = new Promise((resolve) => {
+      const handler = (data: any) => {
+        this.#server?.off(EventType.GetProcessList, handler)
+        resolve(data)
+      }
+
+      this.#server?.on(EventType.GetProcessList, handler)
+    })
+
+    await this.emit({ type: EventType.GetProcessList })
+
+    return p
+  }
+
+  async disconnect() {
+    this.#server = undefined
+    ipc.disconnect(serverID)
   }
 
   async shutdown() {
@@ -39,7 +64,8 @@ class Daemon {
 
   private async emit(event: Event) {
     await this.init()
-    this.#server!.emit(event.type, event)
+    assert(this.#server, "server not connected")
+    this.#server.emit(event.type, event)
   }
 
   private assertReady() {
@@ -58,8 +84,8 @@ class Daemon {
 
   private async connect(): Promise<typeof ipc.server> {
     return new Promise((resolve) => {
-      ipc.connectTo(serverId, socketPath, () => {
-        resolve(ipc.of[serverId])
+      ipc.connectTo(serverID, socketPath, () => {
+        resolve(ipc.of[serverID])
       })
     })
   }

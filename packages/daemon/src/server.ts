@@ -3,19 +3,24 @@ import fse from "fs-extra"
 import ipc from "node-ipc"
 import pino from "pino"
 import onExit from "signal-exit"
-import { pidPath, serverId, socketPath } from "./config"
+import { pidPath, serverID, socketPath } from "./config"
 import { EventType, ProcessStartEvent } from "./event"
 
-process.title = serverId
-ipc.config.id = serverId
+process.title = serverID
+ipc.config.id = serverID
 
 const logger = pino()
-const processes = []
+const processes: number[] = []
 
 const bindEvents = () => {
   ipc.server.on(EventType.ProcessStart, (data: ProcessStartEvent, socket) => {
     logger.info("process started: %o", data)
     processes.push(data.pid)
+  })
+
+  ipc.server.on(EventType.GetProcessList, (data, socket) => {
+    logger.info("processes: %o", data)
+    ipc.server.emit(socket, EventType.GetProcessList, processes)
   })
 
   ipc.server.on("connect", () => {
