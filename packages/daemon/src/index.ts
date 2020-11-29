@@ -5,11 +5,13 @@ import fse from "fs-extra"
 import isRunning from "is-running"
 import ipc from "node-ipc"
 import { logDir, pidPath, serverId, socketPath } from "./config"
+import { Event } from "./event"
 
 export * from "./event"
 
 class Daemon {
   #pid?: number
+  #server?: typeof ipc.server
   #spawnPromise?: Promise<void>
 
   get pid(): number {
@@ -25,14 +27,10 @@ class Daemon {
     return this.#spawnPromise
   }
 
-  async connect(): Promise<typeof ipc.server> {
+  async notifyProcessStart() {
     await this.init()
 
-    return new Promise((resolve) => {
-      ipc.connectTo(serverId, socketPath, () => {
-        resolve(ipc.of[serverId])
-      })
-    })
+    this.#server!.emit(Event.ProcessStart, { pid: process.pid })
   }
 
   async shutdown() {
@@ -51,7 +49,16 @@ class Daemon {
     }
 
     await this.spawnServer()
+    this.#server = await this.connect()
     await this.waitServerReady()
+  }
+
+  private async connect(): Promise<typeof ipc.server> {
+    return new Promise((resolve) => {
+      ipc.connectTo(serverId, socketPath, () => {
+        resolve(ipc.of[serverId])
+      })
+    })
   }
 
   private async waitServerReady(): Promise<void> {

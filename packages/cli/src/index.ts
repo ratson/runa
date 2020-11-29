@@ -1,9 +1,17 @@
-import daemon, { Event } from "@runa/daemon"
+import daemon from "@runa/daemon"
 import execa from "execa"
 import exit from "exit"
 import which from "which"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
+
+const resolveCommand = async (cmd: string) => {
+  try {
+    return await which(cmd)
+  } catch {}
+
+  return false
+}
 
 const main = async () => {
   void yargs(hideBin(process.argv))
@@ -19,9 +27,8 @@ const main = async () => {
         }
 
         const cmd = argv._[0]
-        try {
-          await which(cmd)
-        } catch {
+        const resolved = await resolveCommand(cmd)
+        if (resolved === false) {
           console.error(`Unknown command: ${cmd}`)
           return
         }
@@ -31,8 +38,7 @@ const main = async () => {
           reject: false,
         })
 
-        const server = await daemon.connect()
-        server.emit(Event.ProcessStart, { pid: process.pid })
+        await daemon.notifyProcessStart()
 
         try {
           await p
