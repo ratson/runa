@@ -4,25 +4,17 @@ import delay from "delay"
 import fse from "fs-extra"
 import isRunning from "is-running"
 import ipc from "node-ipc"
-import path from "path"
-import tempy from "tempy"
 import { logDir, pidPath, serverId, socketPath } from "./config"
 
 export * from "./event"
 
 class Daemon {
   #pid?: number
-  #serverPath?: string
   #spawnPromise?: Promise<void>
 
   get pid(): number {
     this.assertReady()
     return this.#pid!
-  }
-
-  url(pathname: string): string {
-    this.assertReady()
-    return `http:/unix:${this.#serverPath!}:${pathname}`
   }
 
   async init() {
@@ -51,21 +43,15 @@ class Daemon {
 
   private assertReady() {
     assert(this.#pid, "pid is missing, call init() first")
-    assert(this.#serverPath, "serverPath is missing, call init() first")
   }
 
   private async spawn() {
-    if (!(await this.isRunning())) {
-      await this.spawnServer()
+    if (await this.isRunning()) {
+      return
     }
 
-    if (socketPath === encodeURIComponent(socketPath)) {
-      this.#serverPath = socketPath
-    } else {
-      const serverPath = path.join(tempy.directory(), "server.sock")
-      await fse.ensureSymlink(socketPath, serverPath)
-      this.#serverPath = serverPath
-    }
+    await this.spawnServer()
+    await this.waitServerReady()
   }
 
   private async waitServerReady(): Promise<void> {
@@ -107,8 +93,6 @@ class Daemon {
       ],
     })
     subprocess.unref()
-
-    await this.waitServerReady()
   }
 }
 
