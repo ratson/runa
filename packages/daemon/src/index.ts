@@ -5,7 +5,7 @@ import fse from "fs-extra"
 import isRunning from "is-running"
 import ipc from "node-ipc"
 import { logDir, pidPath, serverID, socketPath } from "./config"
-import { Event, EventType, ManagedProcess } from "./event"
+import { Event, EventType, ManagedProcessData } from "./event"
 
 export * from "./event"
 
@@ -30,14 +30,14 @@ class Daemon {
     }
   }
 
-  async notifyProcessStart(command: ManagedProcess["command"]) {
+  async notifyProcessStart(command: ManagedProcessData["command"]) {
     await this.emit({ type: EventType.ProcessStart, pid: process.pid, command })
   }
 
   async getProcessList() {
     await this.init()
 
-    const p = new Promise<ManagedProcess[]>((resolve) => {
+    const p = new Promise<ManagedProcessData[]>((resolve) => {
       const handler = (data: any) => {
         this.#server?.off(EventType.GetProcessList, handler)
         resolve(data)
@@ -51,9 +51,19 @@ class Daemon {
     return p
   }
 
+  async restartProcesses(pids: number[]) {
+    await this.init()
+    await this.emit({ type: EventType.RestartProcesses, pids })
+  }
+
+  async registerRestart(callback: () => void) {
+    await this.init()
+    this.#server?.on(EventType.RestartProcesses, callback)
+  }
+
   async disconnect() {
-    this.#server = undefined
     ipc.disconnect(serverID)
+    this.#server = undefined
   }
 
   async shutdown() {

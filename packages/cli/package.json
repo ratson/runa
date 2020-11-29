@@ -16,9 +16,10 @@
   "dependencies": {
     "@runa/daemon": "link:../daemon",
     "cli-table3": "^0.6.0",
+    "enquirer": "^2.3.6",
     "execa": "^4.1.0",
     "exit": "^0.1.2",
-    "got": "^11.8.0",
+    "p-queue": "^6.6.2",
     "which": "^2.0.2",
     "yargs": "^16.1.1"
   },

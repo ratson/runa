@@ -4,6 +4,7 @@ export enum EventType {
   ProcessStart = "runa.process-start",
   ProcessEnd = "runa.process-end",
   GetProcessList = "runa.get-process-list",
+  RestartProcesses = "runa.restart-processes",
 }
 
 export type ProcessStartEvent = {
@@ -12,18 +13,23 @@ export type ProcessStartEvent = {
   command: {
     args: string[]
     cwd: string
-    pid: number
   }
 }
 
-export type ManagedProcess = Except<ProcessStartEvent, "type">
+export type ManagedProcessData = Except<ProcessStartEvent, "type">
 
 type ProcessEndEvent = {
   type: EventType.ProcessEnd
   pid: number
 }
 
+export type RestartProcessesEvent = {
+  type: EventType.RestartProcesses
+  pids: number[]
+}
+
 export type Event =
   | ProcessStartEvent
   | ProcessEndEvent
   | { type: EventType.GetProcessList }
+  | RestartProcessesEvent

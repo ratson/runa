@@ -1,10 +1,15 @@
-import { Except } from "type-fest"
 import fse from "fs-extra"
+import { Socket } from "net"
 import ipc from "node-ipc"
 import pino from "pino"
 import onExit from "signal-exit"
 import { pidPath, serverID, socketPath } from "./config"
-import { EventType, ProcessStartEvent, ManagedProcess } from "./event"
+import {
+  EventType,
+  ManagedProcessData,
+  ProcessStartEvent,
+  RestartProcessesEvent,
+} from "./event"
 
 process.title = serverID
 ipc.config.id = serverID
@@ -12,15 +17,48 @@ ipc.config.id = serverID
 const logger = pino()
 const processes: ManagedProcess[] = []
 
+class ManagedProcess {
+  #data: ProcessStartEvent
+  #socket: Socket
+
+  constructor(data: ProcessStartEvent, socket: Socket) {
+    this.#data = data
+    this.#socket = socket
+  }
+
+  get pid() {
+    return this.#data.pid
+  }
+
+  toData(): ManagedProcessData {
+    return this.#data
+  }
+
+  restart() {
+    ipc.server.emit(this.#socket, EventType.RestartProcesses, {
+      pids: [this.#data.pid],
+    })
+  }
+}
+
 const bindEvents = () => {
   ipc.server.on(EventType.ProcessStart, (data: ProcessStartEvent, socket) => {
-    logger.info("process started: %o", data)
-    processes.push(data)
+    logger.info("event: %o", data)
+    processes.push(new ManagedProcess(data, socket))
   })
 
   ipc.server.on(EventType.GetProcessList, (data, socket) => {
-    logger.info("processes: %o", data)
-    ipc.server.emit(socket, EventType.GetProcessList, processes)
+    logger.info("event: %o", data)
+    ipc.server.emit(
+      socket,
+      EventType.GetProcessList,
+      processes.map((o) => o.toData()),
+    )
+  })
+
+  ipc.server.on(EventType.RestartProcesses, (data: RestartProcessesEvent) => {
+    logger.info("event: %o", data)
+    processes.filter((o) => data.pids.includes(o.pid)).map((p) => p.restart())
   })
 
   ipc.server.on("connect", () => {

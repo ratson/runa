@@ -1,6 +1,7 @@
 import daemon from "@runa/daemon"
 import execa from "execa"
 import exit from "exit"
+import PQueue from "p-queue"
 import which from "which"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
@@ -11,6 +12,44 @@ const resolveCommand = async (cmd: string) => {
   } catch {}
 
   return false
+}
+
+class CommandExecutor {
+  #file: string
+  #args: string[]
+  #cp?: execa.ExecaChildProcess
+  #queue = new PQueue({ concurrency: 1 })
+
+  constructor(commandArgs: string[]) {
+    this.#file = commandArgs[0]
+    this.#args = commandArgs.slice(1)
+  }
+
+  async run(): Promise<number> {
+    void daemon.registerRestart(() => {
+      const p = this.restart()
+      void this.#queue.add(async () => p)
+    })
+
+    this.#cp = this.spawn()
+    await this.#queue.add(async () => this.#cp)
+    await this.#queue.onIdle()
+
+    return this.#cp.exitCode ?? 0
+  }
+
+  restart() {
+    this.#cp?.kill()
+    this.#cp = this.spawn()
+    return this.#cp
+  }
+
+  private spawn() {
+    return execa(this.#file, this.#args, {
+      stdio: "inherit",
+      reject: false,
+    })
+  }
 }
 
 const main = async () => {
@@ -29,28 +68,19 @@ const main = async () => {
         const cmd = argv._[0]
         const resolved = await resolveCommand(cmd)
         if (resolved === false) {
-          console.error(`Unknown command: ${cmd}`)
+          console.log(`Unknown command: ${cmd}`)
           return
         }
 
-        const p = execa(cmd, argv._.slice(1), {
-          stdio: "inherit",
-          reject: false,
-        })
-
-        await daemon.notifyProcessStart({
+        void daemon.notifyProcessStart({
           args: argv._,
           cwd: process.cwd(),
-          pid: p.pid,
         })
 
-        try {
-          await p
-        } catch {
-          console.log("failed")
-        } finally {
-          exit(p.exitCode ?? 0)
-        }
+        const exitCode = await new CommandExecutor(argv._).run()
+
+        await daemon.disconnect()
+        exit(exitCode)
       },
     )
     .help().argv
