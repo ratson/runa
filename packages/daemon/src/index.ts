@@ -131,14 +131,15 @@ class Daemon {
   }
 
   private async spawnServer() {
+    const timestamp = new Date().toISOString().slice(0, 10)
     await fse.ensureDir(logDir(), { mode: 0o700 })
 
     const subprocess = cp.fork(require.resolve("../dist/server.js"), {
       detached: true,
       stdio: [
         "ignore",
-        fse.openSync(logDir("server.stdout.log"), "a"),
-        fse.openSync(logDir("server.stderr.log"), "a"),
+        fse.openSync(logDir(`server.stdout.${timestamp}.log`), "a"),
+        fse.openSync(logDir(`server.stderr.${timestamp}.log`), "a"),
         "ipc",
       ],
     })
