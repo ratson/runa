@@ -53,37 +53,34 @@ class CommandExecutor {
 }
 
 const main = async () => {
+  const i = process.argv.findIndex((s) => s === process.argv0)
+  process.argv.splice(i + 2, 0, "--")
+
   void yargs(hideBin(process.argv))
-    .command(
-      "$0",
-      "execute command",
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => {},
-      async (argv) => {
-        if (argv._.length === 0) {
-          yargs.showHelp()
-          return
-        }
+    .command("$0", "execute command", {}, async (argv) => {
+      if (argv._.length === 0) {
+        yargs.showHelp()
+        return
+      }
 
-        const cmd = argv._[0]
-        const resolved = await resolveCommand(cmd)
-        if (resolved === false) {
-          console.log(`Unknown command: ${cmd}`)
-          return
-        }
+      const cmd = argv._[0]
+      const resolved = await resolveCommand(cmd)
+      if (resolved === false) {
+        console.log(`Unknown command: ${cmd}`)
+        return
+      }
 
-        void daemon.notifyProcessStart({
-          args: argv._,
-          cwd: process.cwd(),
-        })
+      void daemon.notifyProcessStart({
+        args: argv._,
+        cwd: process.cwd(),
+      })
 
-        const exitCode = await new CommandExecutor(argv._).run()
+      const exitCode = await new CommandExecutor(argv._).run()
 
-        await daemon.notifyProcessEnd()
-        await daemon.disconnect()
-        exit(exitCode)
-      },
-    )
+      await daemon.notifyProcessEnd()
+      await daemon.disconnect()
+      exit(exitCode)
+    })
     .help().argv
 }
 
