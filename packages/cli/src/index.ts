@@ -58,12 +58,13 @@ const main = async () => {
 
   void yargs(hideBin(process.argv))
     .command("$0", "execute command", {}, async (argv) => {
-      if (argv._.length === 0) {
+      const commandArgs = argv._
+      if (commandArgs.length === 0) {
         yargs.showHelp()
         return
       }
 
-      const cmd = argv._[0]
+      const cmd = commandArgs[0]
       const resolved = await resolveCommand(cmd)
       if (resolved === false) {
         console.log(`Unknown command: ${cmd}`)
@@ -71,11 +72,11 @@ const main = async () => {
       }
 
       void daemon.notifyProcessStart({
-        args: argv._,
+        args: commandArgs,
         cwd: process.cwd(),
       })
 
-      const exitCode = await new CommandExecutor(argv._).run()
+      const exitCode = await new CommandExecutor(commandArgs).run()
 
       await daemon.notifyProcessEnd()
       await daemon.disconnect()
