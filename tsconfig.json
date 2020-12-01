@@ -3,9 +3,12 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "files": [],
-  "references": [
-    { "path": "./packages/cli" },
-    { "path": "./packages/daemon" }
-  ]
+  "include": [
+    "*.ts",
+    "**/__tests__/*.ts",
+    "**/__tests__/**/*.ts",
+    "**/*.test.ts",
+    "**/test.ts"
+  ],
+  "references": [{ "path": "./packages/cli" }, { "path": "./packages/daemon" }]
 }
