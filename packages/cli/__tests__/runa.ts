@@ -10,7 +10,15 @@ test("print usage by default", async () => {
 })
 
 test("--help", async () => {
-  const res = await runa('--help')
+  const res = await runa("--help")
   expect(res.exitCode).toBe(0)
-  expect(res.stdout).toMatch(/Show help/)
+  expect(res.stdout).toMatchInlineSnapshot(`
+    "cli.js
+
+    execute command
+
+    Options:
+      --version  Show version number                                       [boolean]
+      --help     Show help                                                 [boolean]"
+  `)
 })

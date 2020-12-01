@@ -52,10 +52,16 @@ class CommandExecutor {
   }
 }
 
-const normalizeArgv = () => {
-  const { argv } = process
-  let i = argv.findIndex((s) => s === process.argv0) + 2
+export const normalizeArgv = (
+  argv: typeof process.argv,
+  argv0: typeof process.argv0,
+) => {
+  let i = argv.findIndex((s) => s === argv0) + 2
   while (i < argv.length) {
+    if (argv[i] === "--") {
+      return argv
+    }
+
     if (argv[i].startsWith("-")) {
       i += 1
     } else {
@@ -63,13 +69,17 @@ const normalizeArgv = () => {
     }
   }
 
-  argv.splice(i, 0, "--")
+  if (i === argv.length) {
+    return argv
+  }
+
+  const argvNew = [...argv]
+  argvNew.splice(i, 0, "--")
+  return argvNew
 }
 
 const main = async () => {
-  normalizeArgv()
-
-  void yargs(hideBin(process.argv))
+  void yargs(hideBin(normalizeArgv(process.argv, process.argv0)))
     .command("$0", "execute command", {}, async (argv) => {
       const commandArgs = argv._
       if (commandArgs.length === 0) {
