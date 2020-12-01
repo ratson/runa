@@ -83,22 +83,24 @@ class ScriptsExecutor extends Executor {
       return Object.keys(pkg.scripts ?? {}).filter((k) => isMatch(k))
     }).flat()
 
-    const runScriptOpts = {
-      path: process.cwd(),
-      stdio: "inherit",
-      banner: false,
-    }
     if (this.argv.p) {
-      await Promise.all(
-        cmds.map((event) => runScript({ ...runScriptOpts, event })),
-      )
+      await Promise.all(cmds.map(async (event) => this.npmRun(event)))
     } else {
       for await (const event of cmds) {
-        await runScript({ ...runScriptOpts, event })
+        await this.npmRun(event)
       }
     }
 
     return 0
+  }
+
+  private async npmRun(event: string) {
+    await runScript({
+      path: process.cwd(),
+      stdio: "inherit",
+      banner: false,
+      event,
+    })
   }
 }
 
