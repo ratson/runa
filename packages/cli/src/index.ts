@@ -2,6 +2,8 @@ import daemon from "@runapm/daemon"
 import execa from "execa"
 import exit from "exit"
 import PQueue from "p-queue"
+import picomatch from "picomatch"
+import readPkg from "read-pkg"
 import which from "which"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
@@ -26,6 +28,13 @@ class CommandExecutor {
   }
 
   async run(): Promise<number> {
+    const cmd = this.#file
+    const resolved = await resolveCommand(cmd)
+    if (resolved === false) {
+      console.log(`Unknown command: ${cmd}`)
+      return 127
+    }
+
     void daemon.registerRestart(() => {
       const p = this.restart()
       void this.#queue.add(async () => p)
@@ -49,6 +58,35 @@ class CommandExecutor {
       stdio: "inherit",
       reject: false,
     })
+  }
+}
+
+class ScriptsExecutor {
+  #commandArgs: string[]
+
+  constructor(commandArgs: string[]) {
+    this.#commandArgs = commandArgs
+  }
+
+  async run() {
+    const pkg = await readPkg()
+
+    const cmds = this.#commandArgs
+      .map((s) => {
+        const isMatch = picomatch(s)
+        return Object.keys(pkg.scripts ?? {}).filter((k) => isMatch(k))
+      })
+      .flat()
+      .map((cmd) => [process.env.npm_execpath ?? "npm", "run", cmd])
+
+    for await (const args of cmds) {
+      await execa(args[0], args.slice(1), {
+        stdio: "inherit",
+        reject: false,
+      })
+    }
+
+    return 0
   }
 }
 
@@ -80,31 +118,37 @@ export const normalizeArgv = (
 
 const main = async () => {
   void yargs(hideBin(normalizeArgv(process.argv, process.argv0)))
-    .command("$0", "execute command", {}, async (argv) => {
-      const commandArgs = argv._
-      if (commandArgs.length === 0) {
-        yargs.showHelp()
-        return
-      }
+    .command(
+      "$0",
+      "execute command",
+      (yargs) =>
+        yargs.options({
+          s: {
+            describe: "Run npm-scripts sequentially",
+            type: "boolean",
+          },
+        }),
+      async (argv) => {
+        const commandArgs = argv._
+        if (commandArgs.length === 0) {
+          yargs.showHelp()
+          return
+        }
 
-      const cmd = commandArgs[0]
-      const resolved = await resolveCommand(cmd)
-      if (resolved === false) {
-        console.log(`Unknown command: ${cmd}`)
-        return
-      }
+        const notifyStartPromise = daemon.notifyProcessStart({
+          args: commandArgs,
+          cwd: process.cwd(),
+        })
 
-      void daemon.notifyProcessStart({
-        args: commandArgs,
-        cwd: process.cwd(),
-      })
+        const Executor = argv.s ? ScriptsExecutor : CommandExecutor
+        const exitCode = await new Executor(commandArgs).run()
 
-      const exitCode = await new CommandExecutor(commandArgs).run()
-
-      await daemon.notifyProcessEnd()
-      await daemon.disconnect()
-      exit(exitCode)
-    })
+        await notifyStartPromise
+        await daemon.notifyProcessEnd()
+        await daemon.disconnect()
+        exit(exitCode)
+      },
+    )
     .help().argv
 }
 
