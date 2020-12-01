@@ -3,6 +3,7 @@
   "name": "runa-monorepo",
   "scripts": {
     "build": "tsc -b",
+    "clean": "del 'tsconfig.tsbuildinfo' 'packages/*/dist' 'packages/*/tsconfig.tsbuildinfo'",
     "dev": "tsc -b -w",
     "lint": "xo",
     "precommit": "lint-staged",
@@ -23,6 +24,7 @@
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
     "babel-jest": "^26.6.3",
+    "del-cli": "^3.0.1",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-config-xo": "^0.33.1",
