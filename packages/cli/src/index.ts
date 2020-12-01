@@ -78,20 +78,24 @@ class ScriptsExecutor extends Executor {
   async run() {
     const pkg = await readPkg()
 
-    const cmds = this.argv._
-      .map((s) => {
-        const isMatch = picomatch(s)
-        return Object.keys(pkg.scripts ?? {}).filter((k) => isMatch(k))
-      })
-      .flat()
+    const cmds = this.argv._.map((s) => {
+      const isMatch = picomatch(s)
+      return Object.keys(pkg.scripts ?? {}).filter((k) => isMatch(k))
+    }).flat()
 
-    for await (const event of cmds) {
-      await runScript({
-        event,
-        path: process.cwd(),
-        stdio: "inherit",
-        banner: false,
-      })
+    const runScriptOpts = {
+      path: process.cwd(),
+      stdio: "inherit",
+      banner: false,
+    }
+    if (this.argv.p) {
+      await Promise.all(
+        cmds.map((event) => runScript({ ...runScriptOpts, event })),
+      )
+    } else {
+      for await (const event of cmds) {
+        await runScript({ ...runScriptOpts, event })
+      }
     }
 
     return 0
@@ -135,6 +139,10 @@ const main = async () => {
             describe: "Run npm-scripts sequentially",
             type: "boolean",
           },
+          p: {
+            describe: "Run npm-scripts in parallel",
+            type: "boolean",
+          },
         }),
       async (argv) => {
         const commandArgs = argv._
@@ -148,7 +156,7 @@ const main = async () => {
           cwd: process.cwd(),
         })
 
-        const Executor = argv.s ? ScriptsExecutor : CommandExecutor
+        const Executor = argv.s || argv.p ? ScriptsExecutor : CommandExecutor
         const exitCode = await new Executor(argv).run()
 
         await notifyStartPromise
