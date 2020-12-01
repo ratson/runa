@@ -6,5 +6,11 @@ const runa = (...args: string[]) =>
 test("print usage by default", async () => {
   const res = await runa()
   expect(res.exitCode).toBe(0)
-  expect(res.stderr).toMatch(/--help/)
+  expect(res.stderr).toMatch(/Show help/)
+})
+
+test("--help", async () => {
+  const res = await runa('--help')
+  expect(res.exitCode).toBe(0)
+  expect(res.stdout).toMatch(/Show help/)
 })

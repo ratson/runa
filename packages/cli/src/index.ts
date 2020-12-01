@@ -52,9 +52,22 @@ class CommandExecutor {
   }
 }
 
+const normalizeArgv = () => {
+  const { argv } = process
+  let i = argv.findIndex((s) => s === process.argv0) + 2
+  while (i < argv.length) {
+    if (argv[i].startsWith("-")) {
+      i += 1
+    } else {
+      break
+    }
+  }
+
+  argv.splice(i, 0, "--")
+}
+
 const main = async () => {
-  const i = process.argv.findIndex((s) => s === process.argv0)
-  process.argv.splice(i + 2, 0, "--")
+  normalizeArgv()
 
   void yargs(hideBin(process.argv))
     .command("$0", "execute command", {}, async (argv) => {
