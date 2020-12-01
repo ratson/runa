@@ -84,17 +84,24 @@ class ScriptsExecutor extends Executor {
     }).flat()
 
     if (this.argv.p) {
-      await Promise.all(cmds.map(async (event) => this.npmRun(event)))
+      await Promise.all(cmds.map(async (event) => this.runScript(event)))
     } else {
       for await (const event of cmds) {
-        await this.npmRun(event)
+        await this.runScript(event)
       }
     }
 
     return 0
   }
 
-  private async npmRun(event: string) {
+  private async runScript(event: string) {
+    if (process.env.npm_execpath?.endsWith("/yarn")) {
+      await execa(process.env.npm_execpath!, ["run", event], {
+        stdio: "inherit",
+      })
+      return
+    }
+
     await runScript({
       path: process.cwd(),
       stdio: "inherit",
