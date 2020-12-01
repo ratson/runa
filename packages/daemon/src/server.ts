@@ -5,7 +5,8 @@ import { Socket } from "net"
 import ipc from "node-ipc"
 import pino from "pino"
 import onExit from "signal-exit"
-import { pidPath, serverID, socketPath } from "./config"
+import { logDir, pidPath, serverID, socketPath } from "./config"
+import delOldFiles from "./del-old-files"
 import {
   EventType,
   ManagedProcessData,
@@ -117,6 +118,8 @@ const main = async () => {
   ipc.serve(socketPath, bindEvents)
   ipc.server.start()
   setTimeout(stopOnIdle, idleTimeout)
+
+  await delOldFiles({ cwd: logDir(), patterns: "*.log", age: "7d", depth: 1 })
 }
 
 if (require.main === module) void main()
