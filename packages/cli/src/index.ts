@@ -17,22 +17,34 @@ const resolveCommand = async (cmd: string) => {
   return false
 }
 
-class CommandExecutor {
-  #file: string
-  #args: string[]
+class Executor {
+  #argv: typeof yargs.argv
+
+  constructor(argv: typeof yargs.argv) {
+    this.#argv = argv
+  }
+
+  get argv() {
+    return this.#argv
+  }
+
+  get cmd() {
+    return this.#argv._[0]
+  }
+
+  get cmdArgs() {
+    return this.#argv._.slice(1)
+  }
+}
+
+class CommandExecutor extends Executor {
   #cp?: execa.ExecaChildProcess
   #queue = new PQueue({ concurrency: 1 })
 
-  constructor(commandArgs: string[]) {
-    this.#file = commandArgs[0]
-    this.#args = commandArgs.slice(1)
-  }
-
   async run(): Promise<number> {
-    const cmd = this.#file
-    const resolved = await resolveCommand(cmd)
+    const resolved = await resolveCommand(this.cmd)
     if (resolved === false) {
-      console.log(`Unknown command: ${cmd}`)
+      console.log(`Unknown command: ${this.cmd}`)
       return 127
     }
 
@@ -55,24 +67,18 @@ class CommandExecutor {
   }
 
   private spawn() {
-    return execa(this.#file, this.#args, {
+    return execa(this.cmd, this.cmdArgs, {
       stdio: "inherit",
       reject: false,
     })
   }
 }
 
-class ScriptsExecutor {
-  #commandArgs: string[]
-
-  constructor(commandArgs: string[]) {
-    this.#commandArgs = commandArgs
-  }
-
+class ScriptsExecutor extends Executor {
   async run() {
     const pkg = await readPkg()
 
-    const cmds = this.#commandArgs
+    const cmds = this.argv._
       .map((s) => {
         const isMatch = picomatch(s)
         return Object.keys(pkg.scripts ?? {}).filter((k) => isMatch(k))
@@ -143,7 +149,7 @@ const main = async () => {
         })
 
         const Executor = argv.s ? ScriptsExecutor : CommandExecutor
-        const exitCode = await new Executor(commandArgs).run()
+        const exitCode = await new Executor(argv).run()
 
         await notifyStartPromise
         await daemon.notifyProcessEnd()
