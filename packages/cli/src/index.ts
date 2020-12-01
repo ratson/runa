@@ -1,3 +1,4 @@
+import runScript from "@npmcli/run-script"
 import daemon from "@runapm/daemon"
 import execa from "execa"
 import exit from "exit"
@@ -77,12 +78,13 @@ class ScriptsExecutor {
         return Object.keys(pkg.scripts ?? {}).filter((k) => isMatch(k))
       })
       .flat()
-      .map((cmd) => [process.env.npm_execpath ?? "npm", "run", cmd])
 
-    for await (const args of cmds) {
-      await execa(args[0], args.slice(1), {
+    for await (const event of cmds) {
+      await runScript({
+        event,
+        path: process.cwd(),
         stdio: "inherit",
-        reject: false,
+        banner: false,
       })
     }
 

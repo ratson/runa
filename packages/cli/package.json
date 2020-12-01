@@ -14,6 +14,7 @@
     "runa-daemon": "node dist/daemon-cli.js"
   },
   "dependencies": {
+    "@npmcli/run-script": "^1.8.1",
     "@runapm/daemon": "link:../daemon",
     "cli-table3": "^0.6.0",
     "enquirer": "^2.3.6",
