@@ -83,12 +83,16 @@ class ScriptsExecutor extends Executor {
       return Object.keys(pkg.scripts ?? {}).filter((k) => isMatch(k))
     }).flat()
 
-    if (this.argv.p) {
-      await Promise.all(cmds.map(async (event) => this.runScript(event)))
-    } else {
-      for await (const event of cmds) {
-        await this.runScript(event)
+    try {
+      if (this.argv.p) {
+        await Promise.all(cmds.map(async (event) => this.runScript(event)))
+      } else {
+        for await (const event of cmds) {
+          await this.runScript(event)
+        }
       }
+    } catch (error: unknown) {
+      return (error as any)?.exitCode || 1
     }
 
     return 0
