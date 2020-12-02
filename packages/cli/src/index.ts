@@ -36,6 +36,24 @@ class Executor {
   get cmdArgs() {
     return this.#argv._.slice(1)
   }
+
+  async run(): Promise<number> {
+    void daemon.registerRestart(() => {
+      this.restart()
+    })
+
+    if (this.argv.watch) {
+      chokidar.watch(this.argv.watch as string[]).on("all", () => {
+        this.restart()
+      })
+    }
+
+    return 0
+  }
+
+  restart() {
+    throw new Error("missing implemetation")
+  }
 }
 
 class CommandExecutor extends Executor {
@@ -49,15 +67,7 @@ class CommandExecutor extends Executor {
       return 127
     }
 
-    void daemon.registerRestart(() => {
-      this.restart()
-    })
-
-    if (this.argv.watch) {
-      chokidar.watch(this.argv.watch as string[]).on("all", () => {
-        this.restart()
-      })
-    }
+    await super.run()
 
     this.#cp = this.spawn()
     await this.#queue.add(async () => this.#cp)
