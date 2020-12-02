@@ -1,5 +1,6 @@
 import runScript from "@npmcli/run-script"
 import daemon from "@runapm/daemon"
+import chokidar from "chokidar"
 import execa from "execa"
 import exit from "exit"
 import PQueue from "p-queue"
@@ -49,9 +50,14 @@ class CommandExecutor extends Executor {
     }
 
     void daemon.registerRestart(() => {
-      const p = this.restart()
-      void this.#queue.add(async () => p)
+      this.restart()
     })
+
+    if (this.argv.watch) {
+      chokidar.watch(this.argv.watch as string[]).on("all", () => {
+        this.restart()
+      })
+    }
 
     this.#cp = this.spawn()
     await this.#queue.add(async () => this.#cp)
@@ -63,7 +69,7 @@ class CommandExecutor extends Executor {
   restart() {
     this.#cp?.kill()
     this.#cp = this.spawn()
-    return this.#cp
+    void this.#queue.add(async () => this.#cp)
   }
 
   private spawn() {
@@ -155,6 +161,12 @@ const main = async () => {
           p: {
             describe: "Run npm-scripts in parallel",
             type: "boolean",
+          },
+          w: {
+            alias: "watch",
+            describe: "Restart command on file changes",
+            type: "array",
+            default: ["."],
           },
         }),
       async (argv) => {
