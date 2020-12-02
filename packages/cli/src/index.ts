@@ -6,6 +6,7 @@ import exit from "exit"
 import PQueue from "p-queue"
 import picomatch from "picomatch"
 import readPkg from "read-pkg"
+import readline from "readline"
 import which from "which"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
@@ -43,9 +44,14 @@ class Executor {
     })
 
     if (this.argv.watch) {
-      chokidar.watch(this.argv.watch as string[]).on("all", () => {
-        this.restart()
-      })
+      chokidar
+        .watch(this.argv.watch as string[], {
+          ignoreInitial: true,
+          followSymlinks: false,
+        })
+        .on("all", () => {
+          this.restart()
+        })
     }
 
     return 0
@@ -193,8 +199,21 @@ const main = async () => {
 
         const Executor = argv.s || argv.p ? ScriptsExecutor : CommandExecutor
         const exitCode = await new Executor(argv).run()
-
         await notifyStartPromise
+
+        if (argv.watch) {
+          await new Promise((resolve) => {
+            readline.emitKeypressEvents(process.stdin)
+            process.stdin.setRawMode(true)
+            process.stdin.on("keypress", (str, key) => {
+              if (key.ctrl && key.name === "c") {
+                process.stdin.setRawMode(false)
+                resolve(0)
+              }
+            })
+          })
+        }
+
         await daemon.notifyProcessEnd()
         await daemon.disconnect()
         exit(exitCode)
